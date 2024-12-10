@@ -1,0 +1,17 @@
+{
+  "name": "@uncompa17/nestjs-logger",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "uncompa17",
+  "license": "MIT",
+  "description": "The logger for the nestjs development",
+  "dependencies": {
+    "@nestjs/config": "^3.3.0",
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
+  }
+}
