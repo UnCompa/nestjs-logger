@@ -3,30 +3,36 @@ import { ConfigModule } from '@nestjs/config';
 import { CustomLoggerService } from './logger-module.service';
 
 interface LoggerModuleOptions {
-  logLevel?: 'debug' | 'info' | 'warn' | 'error' | 'verbose';
-  colors?: ColorsLogs; 
+  logLevel?: 'verbose' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+  colors?: ColorsLogs;
 }
 
 interface ColorsLogs {
-  debug?: string
-  error?: string
-  info?: string
-  warn?: string
+  debug?: string;
+  error?: string;
+  info?: string;
+  warn?: string;
 }
 
 @Global()
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule], // Hacemos que funcione bien con la configuración de NestJS
 })
 export class LoggerModule {
   static forRoot(options: LoggerModuleOptions = {}): DynamicModule {
     const { logLevel, colors } = options;
+
     const loggerProvider = {
       provide: CustomLoggerService,
       useFactory: () => {
         return new CustomLoggerService({
           logLevel: logLevel || 'debug',
-          colors: colors,
+          colors: colors || {
+            debug: 'blue',
+            info: 'green',
+            warn: 'yellow',
+            error: 'red',
+          },
         });
       },
     };
@@ -34,7 +40,7 @@ export class LoggerModule {
     return {
       module: LoggerModule,
       providers: [loggerProvider],
-      exports: [CustomLoggerService],
+      exports: [CustomLoggerService], // Asegura que el servicio esté accesible en toda la aplicación
     };
   }
 }
