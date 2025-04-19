@@ -1,86 +1,45 @@
 "use strict";
-var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-    function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
-    var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-    var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-    var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-    var _, done = false;
-    for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-            if (result === void 0) continue;
-            if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-            if (_ = accept(result.get)) descriptor.get = _;
-            if (_ = accept(result.set)) descriptor.set = _;
-            if (_ = accept(result.init)) initializers.unshift(_);
-        }
-        else if (_ = accept(result)) {
-            if (kind === "field") initializers.unshift(_);
-            else descriptor[key] = _;
-        }
-    }
-    if (target) Object.defineProperty(target, contextIn.name, descriptor);
-    done = true;
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
-};
-var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
-    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
-    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
-};
+var LoggerModule_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.LoggerModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
 const logger_module_service_1 = require("./logger-module.service");
-let LoggerModule = (() => {
-    let _classDecorators = [(0, common_1.Global)(), (0, common_1.Module)({
-            imports: [config_1.ConfigModule], // Hacemos que funcione bien con la configuración de NestJS
-        })];
-    let _classDescriptor;
-    let _classExtraInitializers = [];
-    let _classThis;
-    var LoggerModule = _classThis = class {
-        static forRoot(options = {}) {
-            const { logLevel, colors } = options;
-            const loggerProvider = {
-                provide: logger_module_service_1.CustomLoggerService,
-                useFactory: () => {
-                    return new logger_module_service_1.CustomLoggerService({
-                        logLevel: logLevel || 'debug',
-                        colors: colors || {
-                            debug: 'blue',
-                            info: 'green',
-                            warn: 'yellow',
-                            error: 'red',
-                        },
-                    });
+const loggerFactory_service_1 = require("./loggerFactory.service");
+let LoggerModule = LoggerModule_1 = class LoggerModule {
+    static forRoot(options = {}) {
+        return {
+            module: LoggerModule_1,
+            providers: [
+                loggerFactory_service_1.LoggerFactory,
+                {
+                    provide: 'LOGGER',
+                    useFactory: (loggerFactory) => {
+                        return loggerFactory.createLogger(options);
+                    },
+                    inject: [loggerFactory_service_1.LoggerFactory],
                 },
-            };
-            return {
-                module: LoggerModule,
-                providers: [loggerProvider],
-                exports: [logger_module_service_1.CustomLoggerService], // Asegura que el servicio esté accesible en toda la aplicación
-            };
-        }
-    };
-    __setFunctionName(_classThis, "LoggerModule");
-    (() => {
-        const _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(null) : void 0;
-        __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-        LoggerModule = _classThis = _classDescriptor.value;
-        if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-        __runInitializers(_classThis, _classExtraInitializers);
-    })();
-    return LoggerModule = _classThis;
-})();
+                {
+                    provide: logger_module_service_1.CustomLoggerService,
+                    useFactory: (logger) => new logger_module_service_1.CustomLoggerService(logger),
+                    inject: ['LOGGER'],
+                },
+            ],
+            exports: [logger_module_service_1.CustomLoggerService],
+        };
+    }
+};
+LoggerModule = LoggerModule_1 = __decorate([
+    (0, common_1.Global)(),
+    (0, common_1.Module)({
+        imports: [config_1.ConfigModule],
+        providers: [loggerFactory_service_1.LoggerFactory],
+    })
+], LoggerModule);
 exports.LoggerModule = LoggerModule;

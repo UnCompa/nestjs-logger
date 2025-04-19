@@ -1,16 +1,6 @@
 import { DynamicModule } from '@nestjs/common';
-interface LoggerModuleOptions {
-    logLevel?: 'verbose' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
-    colors?: ColorsLogs;
-}
-interface ColorsLogs {
-    debug?: string;
-    error?: string;
-    info?: string;
-    warn?: string;
-}
+import { LoggerConfig } from './loggerFactory.service';
 export declare class LoggerModule {
-    static forRoot(options?: LoggerModuleOptions): DynamicModule;
+    static forRoot(options?: LoggerConfig): DynamicModule;
 }
-export {};
 //# sourceMappingURL=logger-module.module.d.ts.map
