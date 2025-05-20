@@ -38,3 +38,16 @@ import { LoggerModule } from '@uncompa17/nestjs-logger';
 })
 export class AppModule {}
 ```
+
+Injectar el servicio de logging
+
+```ts
+
+export class AppService {
+  constructor(private logger: CustomLogggerService) {}
+
+  get() {
+    this.logger.log('This a message')
+  }
+}
+```
